@@ -13,6 +13,10 @@
 
 ---
 
+## Motivação
+
+A ANPD suspendeu o Go Live (streaming) do Discord no Brasil. Este projeto substitui essa função com uma solução própria, direta e sem dependência de terceiros.
+
 ## O que é
 
 Watchr é um app de watch party estilo "compartilhamento de tela do Discord": uma pessoa transmite uma aba do navegador (com áudio) e a outra assiste em tempo real, de qualquer dispositivo — PC ou celular, sem instalar nada.
