@@ -29,6 +29,7 @@ Foi feito pra resolver um problema simples: assistir algo junto com alguém à d
 - **Áudio isolado da aba** compartilhada, sem vazar som de outras janelas
 - **Chat de texto** e **microfone** para conversar durante a transmissão
 - **Qualidade ajustável em tempo real** — resolução (480p–1080p), FPS (10–60) e bitrate, sem precisar parar a transmissão
+- **Tela cheia** com um clique, com fallback nativo para iOS Safari
 - **Instalável como app (PWA)** — tanto no desktop quanto no celular, com ícone próprio
 - **Leve** por padrão, pensado pra rodar bem em hardware modesto
 
@@ -42,9 +43,22 @@ Foi feito pra resolver um problema simples: assistir algo junto com alguém à d
 ## Como funciona por baixo dos panos
 
 - **PeerJS** (sobre WebRTC) cuida da sinalização e da conexão ponto a ponto usando o broker público gratuito
+- **STUN + TURN** (OpenRelay) na configuração de ICE — o TURN entra como retaguarda quando a conexão direta não se estabelece (comum atrás de CGNAT), melhorando a estabilidade da transmissão
 - `getDisplayMedia()` captura a tela/aba; `getUserMedia()` captura o microfone
 - O bitrate é controlado via `RTCRtpSender.setParameters()`, permitindo trocar a qualidade sem reiniciar a chamada
 - Sem back-end próprio — o app inteiro é estático (HTML/CSS/JS) e roda no GitHub Pages
+
+## Estrutura do projeto
+
+```
+watchr/
+├── index.html        # marcação e estrutura da página
+├── stylesheets.css    # estilos
+├── script.js          # lógica (WebRTC, chat, controles)
+├── manifest.json       # configuração do PWA
+├── sw.js               # service worker (instalação offline)
+└── icon-192.png, icon-512.png
+```
 
 ## Rodando localmente
 
@@ -64,12 +78,17 @@ e acesse `http://localhost:8000`.
 ## Limitações conhecidas
 
 - Isolar o áudio de uma janela que não seja aba do navegador não é suportado por nenhum navegador atualmente — pra capturar um app nativo (jogo, player, etc.), a alternativa é compartilhar "Tela inteira" com áudio do sistema, mas aí todos os sons do PC são transmitidos, não só os do app
-- O broker público do PeerJS é gratuito e não tem garantia de disponibilidade; para uso em maior escala, o ideal é rodar um servidor de sinalização próprio
+- O broker do PeerJS e o servidor TURN usados são públicos, gratuitos e sem garantia de disponibilidade ou capacidade; para uso em maior escala, o ideal é rodar servidores próprios
+- A qualidade da transmissão depende principalmente da banda de **upload** de quem compartilha a tela, que costuma ser bem mais limitada que a de download
 - Compatibilidade de captura de áudio de aba varia entre navegadores — funciona de forma mais confiável no Chrome/Edge
 
 ## Stack
 
-`HTML` · `CSS` · `JavaScript` · `WebRTC` · `PeerJS` · `GitHub Pages`
+`HTML` · `CSS` · `JavaScript` · `WebRTC` · `PeerJS` · `TURN (OpenRelay)` · `GitHub Pages`
+
+## Contribuidores
+
+- [nanaluvsu](https://github.com/nanaluvsu) — refatoração de CSS/JS em arquivos separados
 
 ## Licença
 
